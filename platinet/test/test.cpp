@@ -23,10 +23,10 @@ int main() {
 //	_database.orderBy("public.articoli.scorta_minima", true);
 //	_database.orderMode("public.articoli.scorta_minima", engine::column::asc);
 
-//	engine::schema::loadCommand_info _info = _database.loadCommand("public.articoli");
-//
-//	cout <<_info.__tablePath <<endl
-//	<<_info.__loadCommand <<endl;
+	engine::schema::loadCommand_info _info = _database.loadCommand("public.articoli");
+
+	cout <<_info.__tablePath <<endl
+	<<_info.__loadCommand <<endl;
 
 	std::list<std::string> 	_tuple1;
 		_tuple1.push_back("pnll01");
