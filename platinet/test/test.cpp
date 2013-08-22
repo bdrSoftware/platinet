@@ -25,8 +25,8 @@ int main() {
 
 	engine::schema::loadCommand_info _info = _database.loadCommand("public.articoli");
 
-	cout <<_info.__tablePath <<endl
-	<<_info.__loadCommand <<endl;
+//	cout <<_info.__tablePath <<endl
+//	<<_info.__loadCommand <<endl;
 
 	std::list<std::string> 	_tuple1;
 		_tuple1.push_back("pnll01");
