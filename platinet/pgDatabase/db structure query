@@ -1,0 +1,21 @@
+//tutte le colonne
+select
+col.table_schema,col.table_name,col.column_name,col.data_type,col.character_maximum_length,col.column_default 
+from information_schema.columns col
+where col.table_schema <> 'pg_catalog'and col.table_schema <> 'information_schema'
+
+
+//colonne chiave
+select
+col.table_schema, col.table_name, col.column_name, col.data_type, col.character_maximum_length, col.column_default
+from information_schema.columns col join information_schema.constraint_column_usage ccl on col.table_schema=ccl.table_schema and col.table_name=ccl.table_name and col.column_name=ccl.column_name join information_schema.table_constraints ts on ccl.constraint_name=ts.constraint_name
+where ts.constraint_type = 'PRIMARY KEY' and col.table_schema <> 'pg_catalog'and col.table_schema <> 'information_schema'
+
+//riferimenti per chiavi esterne
+select
+tc.table_schema, tc.table_name, kcu.column_name, ccu.table_schema, ccu.table_name, ccu.column_name
+from information_schema.table_constraints tc
+left join information_schema.key_column_usage kcu ON tc.constraint_catalog = kcu.constraint_catalog AND tc.constraint_schema = kcu.constraint_schema AND tc.constraint_name = kcu.constraint_name
+left join information_schema.referential_constraints rc ON tc.constraint_catalog = rc.constraint_catalog AND tc.constraint_schema = rc.constraint_schema AND tc.constraint_name = rc.constraint_name
+left join information_schema.constraint_column_usage ccu ON rc.unique_constraint_catalog = ccu.constraint_catalog AND rc.unique_constraint_schema = ccu.constraint_schema AND rc.unique_constraint_name = ccu.constraint_name
+where tc.constraint_type = 'FOREIGN KEY'
