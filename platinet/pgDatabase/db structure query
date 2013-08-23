@@ -1,8 +1,124 @@
-//tutte le colonne
+create table articoli(
+codice_articolo varchar(20) primary key,
+codice_produttore varchar(20),
+codice_EAN varchar(13),
+nome_articolo varchar(100),
+produttore varchar(20),
+imponibile real,
+aliquota_iva smallint,
+tipo_confezionamento varchar(20),
+scorta_minima integer
+);
+
+create table clienti_f (
+codice_fiscale varchar(16) primary key,
+nome varchar(20),
+cognome varchar(20),
+via_piazza varchar(100),
+cap varchar(5),
+citta varchar(50),
+provincia varchar(2),
+telefono_1 varchar(15),
+fax varchar(15),
+telefono_2 varchar(15),
+telefono_3 varchar(15),
+email varchar(100)
+);
+
+create table clienti_g (
+partita_iva varchar(11) primary key,
+ragione_sociale varchar(20),
+via_piazza varchar(100),
+cap varchar(5),
+citta varchar(50),
+provincia varchar(2),
+telefono_1 varchar(15),
+fax varchar(15),
+telefono_2 varchar(15),
+telefono_3 varchar(15),
+email varchar(100)
+);
+
+create table magazzini(
+codice_magazzino varchar(5) primary key,
+via_piazza varchar(100),
+cap varchar(5),
+citta varchar(50),
+provincia varchar(2),
+telefono_1 varchar(15),
+fax varchar(15),
+telefono_2 varchar(15),
+telefono_3 varchar(15)
+);
+
+create table giacenze (
+codice_articolo varchar(20) references articoli,
+codice_magazzino varchar(5) references magazzini,
+posizione varchar(100),
+quantita bigint,
+primary key (codice_articolo, codice_magazzino, posizione)
+);
+
+create table acquisti_f(
+codice_acquisto varchar(10),
+codice_fiscale varchar(16) references  clienti_f,
+codice_articolo varchar(20) references articoli,
+quantita integer,
+data_acquisto date,
+evaso boolean default false,
+primary key (codice_acquisto, codice_fiscale, codice_articolo)
+);
+
+create table acquisti_g(
+codice_acquisto varchar(10),
+partita_iva varchar(16) references  clienti_g,
+codice_articolo varchar(20) references articoli,
+quantita integer,
+data_acquisto date,
+evaso boolean default false,
+primary key (codice_acquisto, partita_iva, codice_articolo)
+);
+
+create table fornitori (
+partita_iva varchar(11) primary key,
+ragione_sociale varchar(20),
+via_piazza varchar(100),
+cap varchar(5),
+citta varchar(50),
+provincia varchar(2),
+telefono_1 varchar(15),
+fax varchar(15),
+telefono_2 varchar(15),
+telefono_3 varchar(15),
+email varchar(100)
+);
+
+create table forniture (
+partita_iva varchar(11) references fornitori,
+codice_articolo varchar(20) references articoli,
+quantita_max integer,
+gg_evasione smallint,
+primary key(partita_iva, codice_articolo)
+);
+
+create role reparto_clienti;
+grant SELECT ON articoli, clienti_f, clienti_g, acquisti_f, acquisti_g, giacenze, magazzini TO reparto_clienti;
+grant insert, update, delete ON clienti_f, clienti_g, acquisti_f, acquisti_g TO reparto_clienti;
+create role reparto_magazzino;
+grant select on articoli, acquisti_f, acquisti_g, giacenze, magazzini to reparto_magazzino;
+grant update on acquisti_f, acquisti_g, giacenze to reparto_magazzino;
+grant insert on giacenze to reparto_magazzino;
+create role reparto_fornitori;
+grant select on articoli, giacenze, magazzini, fornitori, forniture to reparto_fornitori;
+grant update on fornitori, forniture to reparto_fornitori;
+create role grande_capo;
+grant insert, update, delete, select on articoli, magazzini, giacenze, clienti_f, clienti_g, acquisti_f, acquisti_g, fornitori, forniture to grande_capo;
+
+//tutte le colonne (basic)
 select
 col.table_schema,col.table_name,col.column_name,col.data_type,col.character_maximum_length,col.column_default 
 from information_schema.columns col
-where col.table_schema <> 'pg_catalog'and col.table_schema <> 'information_schema'
+where col.table_schema not in('pg_catalog', 'information_schema')
 
 
 //colonne chiave
